@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SourceHorse Login Redirect</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Redirecting to SourceHorse...</h2>
+
+  <script>
+    // Grab the full hash from the magic link
+    const hash = window.location.hash || '';
+    
+    // Optional: Show debug info
+    console.log('Magic link hash:', hash);
+
+    // Try to detect installed extension(s)
+    // If you know your dev and prod IDs, you can add them here:
+    const candidateIds = [
+      // Add your local dev ID here (optional)
+      // 'iaobiicbkliblloekjgbljpcpnfdigac',
+
+      // Once you know your permanent store ID, add it here:
+      // 'your_production_id_here',
+    ];
+
+    // Redirect to the first candidate ID for now
+    if (candidateIds.length > 0) {
+      const targetId = candidateIds[0];
+      const redirectUrl = `chrome-extension://${targetId}/login.html${hash}`;
+      console.log('Redirecting to:', redirectUrl);
+      location.href = redirectUrl;
+    } else {
+      document.body.innerHTML = `
+        <h3>Could not detect SourceHorse extension.</h3>
+        <p>Please install the extension and try again.</p>
+      `;
+    }
+  </script>
+</body>
+</html>
