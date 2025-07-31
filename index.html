@@ -24,7 +24,7 @@
   <div class="log" id="log"></div>
 
   <script>
-    const EXT_ID = "kdjnmpafgpneipjegcdaklclfihoafce"; // Update if your production ID changes
+    const EXT_ID = "kdjnmpafgpneipjegcdaklclfihoafce";
     const logEl = document.getElementById("log");
     function log(msg) {
       console.log(msg);
@@ -50,24 +50,18 @@
       log("Parsed tokens in redirect page:");
       log(JSON.stringify(params, null, 2));
 
-      const access_token = params["access_token"];
-      const refresh_token = params["refresh_token"];
+      // ✅ Convert tokens to query params for the extension page
+      const query = new URLSearchParams({
+        access_token: params["access_token"],
+        refresh_token: params["refresh_token"]
+      }).toString();
 
-      // ✅ Send tokens directly to extension background via external messaging
-      chrome.runtime.sendMessage(
-        EXT_ID,
-        { type: "SET_SESSION", access_token, refresh_token },
-        (response) => {
-          log("📩 Background responded: " + JSON.stringify(response));
+      // ✅ Open extension login page directly
+      const extensionUrl = `chrome-extension://${EXT_ID}/login.html?${query}`;
+      window.open(extensionUrl, "_blank");
 
-          // Open login.html for UI confirmation (optional)
-          const extensionUrl = `chrome-extension://${EXT_ID}/login.html`;
-          window.open(extensionUrl, "_blank");
-
-          log("✅ Session sent to extension. Closing in 2 seconds...");
-          setTimeout(() => window.close(), 2000);
-        }
-      );
+      log("✅ Opened extension login.html with query params. Closing in 2 seconds...");
+      setTimeout(() => window.close(), 2000);
     } else {
       log("❌ No access_token in hash. Cannot set session.");
     }
