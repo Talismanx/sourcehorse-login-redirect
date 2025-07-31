@@ -15,28 +15,25 @@
   <h2>Redirecting to SourceHorse...</h2>
 
   <script>
-    // Capture the Supabase magic link hash
+    // Grab the Supabase magic link hash
     const hash = window.location.hash || '';
     console.log('Magic link hash:', hash);
 
-    // ✅ Add your extension IDs here
+    // ✅ Extension IDs
     const candidateIds = [
-      'kdjnmpafgpneipjegcdaklclfihoafce', // current dev
-      // 'your_production_id_here', // add once published
+      'kdjnmpafgpneipjegcdaklclfihoafce', // dev build
+      // 'your_production_id_here',        // add after Web Store
     ];
 
-    // Pick the first candidate for now
     const targetId = candidateIds[0];
 
-    // Build full extension URL with hash
-    const extensionUrl = `chrome-extension://${targetId}/login.html${hash}`;
+    // Encode hash in query param as fallback for MV3
+    const extensionUrl = `chrome-extension://${targetId}/login.html?magic=${encodeURIComponent(hash)}${hash}`;
     console.log('Redirecting to extension URL:', extensionUrl);
 
-    // ✅ Open extension in a new tab (forces fresh context)
+    // Open extension in new tab and close redirect page
     window.open(extensionUrl, '_blank');
-
-    // ✅ Close redirect page
-    window.close();
+    setTimeout(() => window.close(), 500);
   </script>
 </body>
 </html>
