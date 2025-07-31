@@ -24,17 +24,16 @@
   <div class="log" id="log"></div>
 
   <script>
+    const EXT_ID = "kdjnmpafgpneipjegcdaklclfihoafce"; // Update if needed
     const logEl = document.getElementById("log");
     function log(msg) {
       console.log(msg);
       logEl.textContent += msg + "\n";
     }
 
-    // ✅ Grab the Supabase magic link hash
     const hash = window.location.hash || "";
     log("Magic link hash: " + hash);
 
-    // ✅ Parse hash params
     function parseHashParams(hash) {
       return hash
         .replace(/^#/, "")
@@ -46,7 +45,6 @@
         }, {});
     }
 
-    // ✅ If hash contains access_token, parse and send to background
     if (hash.includes("access_token")) {
       const params = parseHashParams(hash);
       log("Parsed tokens in redirect page:");
@@ -55,29 +53,23 @@
       const access_token = params["access_token"];
       const refresh_token = params["refresh_token"];
 
-      // ✅ Send tokens to extension background
-      const EXT_ID = "kdjnmpafgpneipjegcdaklclfihoafce"; // Update if needed
+      // ✅ Send tokens directly to extension background via external messaging
       chrome.runtime.sendMessage(
         EXT_ID,
-        {
-          type: "SET_SESSION",
-          access_token,
-          refresh_token
-        },
+        { type: "SET_SESSION", access_token, refresh_token },
         (response) => {
           log("📩 Background responded: " + JSON.stringify(response));
 
-          // ✅ Optionally open extension page for UI feedback
+          // Open login.html for UI confirmation (optional)
           const extensionUrl = `chrome-extension://${EXT_ID}/login.html`;
           window.open(extensionUrl, "_blank");
 
           log("✅ Session sent to extension. Closing in 2 seconds...");
-          setTimeout(() => window.close(), 9000);
+          setTimeout(() => window.close(), 2000);
         }
       );
     } else {
       log("❌ No access_token in hash. Cannot set session.");
-      // Keep page open for debugging
     }
   </script>
 </body>
